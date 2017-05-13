@@ -266,7 +266,8 @@ class Memes:
                         final_tags.remove(tag1)
                         break
             index = self.memes.index(meme)
-            tag_changes.append("``{} -> {}``".format(" ".join(meme['tags']), " ".join(final_tags)))
+            if len(final_tags) != len(meme['tags']):
+                tag_changes.append("``{} -> {}``".format(" ".join(meme['tags']), " ".join(final_tags)))
             self.memes[index]['tags'] = final_tags
         if tag_changes:
             self.save_memes()
@@ -305,6 +306,7 @@ class Memes:
         for tag in tags.split():
             self._last_meme['tags'].append(tag)
         self.memes[index] = self._last_meme
+        self.save_memes()
         await self.bot.say(self.bot.msg_prefix + "Added")
 
     @lastmeme.command(pass_context=True, aliases=['removetags'])
@@ -324,6 +326,7 @@ class Memes:
                     except ValueError:
                         pass
         self.memes[index] = self._last_meme
+        self.save_memes()
         await self.bot.say(self.bot.msg_prefix + "Removed")
 
     @lastmeme.command(pass_context=True)
@@ -338,6 +341,8 @@ class Memes:
             else:
                 self._last_meme.setdefault('instants', list()).append(s)
         self.memes[index] = self._last_meme
+        self.save_memes()
+        await self.bot.say(self.bot.msg_prefix + "Added")
 
 
 
