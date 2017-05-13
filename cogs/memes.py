@@ -28,6 +28,8 @@ class Memes:
             self.memes = list()
 
     def save_memes(self):
+        for meme in self.memes:
+            random.shuffle(meme['tags'])
         with open("memes.json", "w") as file_out:
             json.dump(self.memes, file_out)
 
