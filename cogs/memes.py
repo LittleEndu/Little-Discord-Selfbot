@@ -20,7 +20,7 @@ class Memes:
         self.IMGUR_API_LINK = "https://api.imgur.com/3/image"
         self.bot = bot
         self.config = bot.config
-        self._lastmeme = None
+        self._last_meme = None
         if os.path.isfile("memes.json"):
             with open("memes.json") as meme_file:
                 self.memes = json.load(meme_file)
@@ -52,7 +52,8 @@ class Memes:
                     will_add = False
             if will_add:
                 memes.append(meme)
-
+        if len(memes) == 1:
+            self._last_meme = memes[0]
         return memes
 
     def has_instants(self, search_for):
@@ -151,7 +152,7 @@ class Memes:
             await asyncio.sleep(5)
             await self.bot.delete_message(ctx.message)
             self.memes[index]['usage'] = self.memes[index].setdefault('usage', 0) + 1
-            self._lastmeme = memes[index]
+            self._last_meme = memes[index]
         else:
             await self.bot.say(self.bot.msg_prefix + "Unable to find meme")
 
@@ -285,7 +286,21 @@ class Memes:
         Does stuff to last meme
         """
         if ctx.invoked_subcommand is None:
-            await self.bot.say(self.bot.msg_prefix + "Last meme is: ``{}``".format(" ".join(self._lastmeme['tags'])))
+            if not self._last_meme:
+                await self.bot.say(self.bot.msg_prefix + "You haven't used meme since last restart.")
+                return
+            await self.bot.say(self.bot.msg_prefix + "Last meme is: ``{}``".format(" ".join(self._last_meme['tags'])))
+
+    @lastmeme.command(pass_context=True, alias=['addtags'])
+    async def addtag(self, ctx, *, tags: str):
+        """
+        Adds tag to last meme
+        """
+        index = self.memes.index(self._last_meme)
+        for tag in tags.split():
+            self._last_meme['tags'].append(tag)
+        self.memes[index] = self._last_meme
+        await self.bot.say(self.bot.msg_prefix + "Added")
 
 def setup(bot):
     bot.add_cog(Memes(bot))
