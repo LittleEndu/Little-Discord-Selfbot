@@ -241,6 +241,41 @@ class Memes:
                 mmm = self.bot.msg_prefix + next_m
         await self.bot.say(mmm[:-2])
 
+    @commands.command(pass_context=True)
+    async def cleanmemes(self, ctx):
+        """
+        Cleans memes
+        """
+        tag_changes = []
+        for meme in self.memes:
+            assert isinstance(meme, dict)
+            final_tags = meme['tags']
+            for tag1 in final_tags[:]:
+                one_skip = True
+                for tag2 in final_tags[:]:
+                    if tag1 == tag2:
+                        if one_skip:
+                            one_skip = False
+                            continue
+                    if tag1 in tag2:
+                        final_tags.remove(tag1)
+                        break
+            index = self.memes.index(meme)
+            tag_changes.append("``{} -> {}``".format(" ".join(meme['tags']), " ".join(final_tags)))
+            self.memes[index]['tags'] = final_tags
+        if tag_changes:
+            self.save_memes()
+            mmm = self.bot.msg_prefix + "Here are the memes I changed:\n"
+            for change in tag_changes:
+                next_m = change + ", "
+                if len(mmm + next_m) < 2000:
+                    mmm += next_m
+                else:
+                    await self.bot.say(mmm[:-2])
+                    mmm = self.bot.msg_prefix + next_m
+            await self.bot.say(mmm[:-2])
+        else:
+            await self.bot.say(self.bot.msg_prefix + "All memes are already clean")
 
 def setup(bot):
     bot.add_cog(Memes(bot))
