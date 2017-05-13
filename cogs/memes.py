@@ -291,16 +291,38 @@ class Memes:
                 return
             await self.bot.say(self.bot.msg_prefix + "Last meme is: ``{}``".format(" ".join(self._last_meme['tags'])))
 
-    @lastmeme.command(pass_context=True, alias=['addtags'])
+    @lastmeme.command(pass_context=True, aliases=['addtags'])
     async def addtag(self, ctx, *, tags: str):
         """
         Adds tag to last meme
         """
+        if not self._last_meme:
+            await self.bot.say(self.bot.msg_prefix + "You haven't used meme since last restart.")
+            return
         index = self.memes.index(self._last_meme)
         for tag in tags.split():
             self._last_meme['tags'].append(tag)
         self.memes[index] = self._last_meme
         await self.bot.say(self.bot.msg_prefix + "Added")
+
+    @lastmeme.command(pass_context=True, aliases=['removetags'])
+    async def removetag(self, ctx, *, tags: str):
+        """
+        Removes tag from last meme
+        """
+        if not self._last_meme:
+            await self.bot.say(self.bot.msg_prefix + "You haven't used meme since last restart.")
+            return
+        index = self.memes.index(self._last_meme)
+        for s_tag in tags.split():
+            for m_tag in self._last_meme['tags'][:]:
+                if m_tag in s_tag:
+                    try:
+                        self._last_meme['tags'].remove(m_tag)
+                    except ValueError:
+                        pass
+        self.memes[index] = self._last_meme
+        await self.bot.say(self.bot.msg_prefix + "Removed")
 
 def setup(bot):
     bot.add_cog(Memes(bot))
