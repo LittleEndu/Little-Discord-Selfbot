@@ -70,7 +70,7 @@ class Memes:
 
     async def ask(self, ctx, question: str):
         to_del = await self.bot.say(self.bot.msg_prefix + question)
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.5)
         response = await self.bot.wait_for_message(author=ctx.message.author)
         string = response.content
         await self.bot.delete_message(to_del)
@@ -325,6 +325,21 @@ class Memes:
                         pass
         self.memes[index] = self._last_meme
         await self.bot.say(self.bot.msg_prefix + "Removed")
+
+    @lastmeme.command(pass_context=True)
+    async def addinstant(self, ctx, instant: str):
+        """
+        Adds instant access to last meme
+        """
+        index = self.memes.index(self._last_meme)
+        for s in instant.split():
+            if self.has_instants(s):
+                await self.bot.say(self.bot.msg_prefix + "Instant ``{}`` already in use.".format(s))
+            else:
+                self._last_meme.setdefault('instants', list()).append(s)
+        self.memes[index] = self._last_meme
+
+
 
 def setup(bot):
     bot.add_cog(Memes(bot))
