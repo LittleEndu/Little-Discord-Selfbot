@@ -20,6 +20,7 @@ class Memes:
         self.IMGUR_API_LINK = "https://api.imgur.com/3/image"
         self.bot = bot
         self.config = bot.config
+        self._lastmeme = None
         if os.path.isfile("memes.json"):
             with open("memes.json") as meme_file:
                 self.memes = json.load(meme_file)
@@ -150,6 +151,7 @@ class Memes:
             await asyncio.sleep(5)
             await self.bot.delete_message(ctx.message)
             self.memes[index]['usage'] = self.memes[index].setdefault('usage', 0) + 1
+            self._lastmeme = memes[index]
         else:
             await self.bot.say(self.bot.msg_prefix + "Unable to find meme")
 
@@ -276,6 +278,14 @@ class Memes:
             await self.bot.say(mmm[:-2])
         else:
             await self.bot.say(self.bot.msg_prefix + "All memes are already clean")
+
+    @commands.group(pass_context=True)
+    async def lastmeme(self, ctx):
+        """
+        Does stuff to last meme
+        """
+        if ctx.invoked_subcommand is None:
+            await self.bot.say(self.bot.msg_prefix + "Last meme is: ``{}``".format(" ".join(self._lastmeme['tags'])))
 
 def setup(bot):
     bot.add_cog(Memes(bot))
