@@ -88,6 +88,6 @@ ENV/
 # Rope project settings
 .ropeproject
 /config.json
-.idea
+.idea/*
 logs/
 /memes.json

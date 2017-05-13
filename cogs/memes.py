@@ -229,8 +229,10 @@ class Memes:
             await self.bot.say(self.bot.msg_prefix + "Unable to find anything")
             return
         mmm = self.bot.msg_prefix
+        counter = 1
         for meme in memes:
-            next_m = "``{}``, ".format(" ".join(meme['tags']))
+            next_m = "``{}: {}``, ".format(counter, " ".join(meme['tags']))
+            counter += 1
             if len(next_m + mmm) < 2000:
                 mmm += next_m
             else:
