@@ -145,9 +145,10 @@ class Memes:
                 em.set_image(url=memes[index]['link'])
                 await self.bot.send_message(ctx.message.channel, embed=em)
             else:
-                await self.bot.say(self.bot.msg_prefix + memes[0]['link'])
+                await self.bot.say(self.bot.msg_prefix + memes[index]['link'])
             await asyncio.sleep(5)
             await self.bot.delete_message(ctx.message)
+            self.memes[index]['usage'] = self.memes[index].setdefault('usage', 0) + 1
         else:
             await self.bot.say(self.bot.msg_prefix + "Unable to find meme")
 
