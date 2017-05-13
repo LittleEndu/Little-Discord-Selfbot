@@ -30,9 +30,12 @@ class Memes:
         with open("memes.json", "w") as file_out:
             json.dump(self.memes, file_out)
 
+    def normalize(self, string: str):
+        return string.replace("'", "").replace("fuck", "fck").lower()
+
     def find_best_meme(self, search_for):
         memes = []
-        search_tags = search_for.split()
+        search_tags = self.normalize(search_for).split()
         for meme in self.memes:
             assert isinstance(meme, dict)
             will_add = True
@@ -71,27 +74,25 @@ class Memes:
         return string
 
     @commands.command(pass_context=True, aliases=["addmeme"])
-    async def savememe(self, ctx):
+    async def savememe(self, ctx, url: str = ""):
         """
         Saves the uploaded image
         """
-        if len(ctx.message.attachments) > 0:
-            url = ctx.message.attachments[0]['url']
+        if len(ctx.message.attachments) > 0 or url:
+            if len(ctx.message.attachments) > 0:
+                url = ctx.message.attachments[0]['url']
             async with aiohttp.ClientSession() as session:
                 async with session.post(self.IMGUR_API_LINK,
                                         params={'image': url, 'type': "URL"},
                                         headers={"Authorization": "Client-ID {}".format(
                                             self.config['imgur_client_id'])}) as response:
                     response_json = json.loads(await response.text())
-                    to_del = await self.bot.say(self.bot.msg_prefix + "Please give tags")
-                    response_tags = await self.bot.wait_for_message(author=ctx.message.author)
-                    if len(response_tags.content) > 0:
-                        tags = response_tags.content.split()
+                    response_tags = await self.ask(ctx, "Please give tags")
+                    if len(response_tags) > 0:
+                        tags = self.normalize(response_tags).split()
                     else:
                         await self.bot.say(self.bot.msg_prefix + "No tags given... Aborting...")
                         return
-                    await self.bot.delete_message(to_del)
-                    await self.bot.delete_message(response_tags)
                     info = {'tags': tags,
                             'delete_hash': response_json['data']['deletehash'],
                             'width': response_json['data']['width'],
