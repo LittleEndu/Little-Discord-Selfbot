@@ -88,8 +88,6 @@ ENV/
 # Rope project settings
 .ropeproject
 /config.json
-.idea/Little-Discord-Selfbot.iml
-.idea/misc.xml
-.idea/modules.xml
-.idea/workspace.xml
+.idea
 logs/
+/memes.json

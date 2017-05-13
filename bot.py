@@ -2,10 +2,9 @@ import inspect
 import json
 import logging
 import os
-import traceback
 import sys
+import traceback
 from datetime import datetime
-
 
 import logbook
 from discord.ext import commands
@@ -18,11 +17,12 @@ if not os.path.isfile("config.json"):
 with open("config.json") as file_in:
     config = json.load(file_in)
 
-bot = commands.Bot(command_prefix=config['prefix'], description="Selfbot by LittleEndu", self_bot=True)
+bot = commands.Bot(command_prefix=config.get('prefix', "selfbot>"), description="Selfbot by LittleEndu", self_bot=True)
 
 if not os.path.isdir("logs"):
     os.makedirs("logs")
 bot.config = config
+bot.msg_prefix = "\U0001f916 "
 bot.logger = logbook.Logger("Selfbot")
 bot.logger.handlers.append(
     logbook.FileHandler("logs/" + str(datetime.now().date()) + ".log", level="INFO", bubble=True))
@@ -56,32 +56,35 @@ async def on_command_error(e, ctx):
                                ":x: Check failed. You probably don't have permission to do this.")
         return
     elif isinstance(e, commands.errors.CommandNotFound):
-        await bot.send_message(ctx.message.channel, ":question:")
+        await bot.send_message(ctx.message.channel, bot.msg_prefix + ":question:")
         return
     else:
         await bot.send_message(ctx.message.channel,
                                ":x: Error occurred while handling the command.")
         bot.logger.error("".join(traceback.format_exception(type(e), e.__cause__, e.__cause__.__traceback__)))
 
+
 @bot.command(pass_context=True, hidden=True, aliases=['github'])
 async def info(ctx):
     """
     Shows info
     """
-    if config['info_msg'] is None:
+    if not config.get('info_msg', ""):
         msg = "https://github.com/LittleEndu/Little-Discord-Selfbot"
     else:
-        msg = config['info_msg']
-    await bot.say("\U0001f916 "+msg)
+        msg = config.get('info_msg', "No info")
+    await bot.say(bot.msg_prefix + msg)
+
 
 @bot.command(pass_context=True, hidden=True, aliases=['exit', 'stop', 'die'])
 async def quit(ctx):
     """
     Stops the bot
     """
-    await bot.say("\U0001f916 \U0001f52b")
+    await bot.say(bot.msg_prefix + "\U0001f52b")
     bot.logger.info("Exit by command...\n\n\n")
     os._exit(0)
+
 
 @bot.command(pass_context=True, hidden=True, aliases=['reloadall'])
 async def reload(ctx):
@@ -97,12 +100,13 @@ async def reload(ctx):
         try:
             bot.load_extension(i)
         except:
-            await bot.say('\U0001f916 Failed to reload extension ``%s``' % i)
+            await bot.say(bot.msg_prefix + "Failed to reload extension ``%s``" % i)
             fail = True
     if fail:
-        await bot.say('\U0001f916 Reloaded remaining extensions.')
+        await bot.say(bot.msg_prefix + "Reloaded remaining extensions.")
     else:
-        await bot.say('\U0001f916 Reloaded all extensions.')
+        await bot.say(bot.msg_prefix + "Reloaded all extensions.")
+
 
 @bot.command(pass_context=True, hidden=True)
 async def load(ctx, *, extension: str):
@@ -113,9 +117,9 @@ async def load(ctx, *, extension: str):
         bot.load_extension("cogs.{}".format(extension))
     except Exception as e:
         bot.logger.error("".join(traceback.format_exception(type(e), e.__cause__, e.__traceback__)))
-        await bot.say("\U0001f916 Could not load `{}` -> `{}`".format(extension, e))
+        await bot.say(bot.msg_prefix + "Could not load `{}` -> `{}`".format(extension, e))
     else:
-        await bot.say("\U0001f916 Loaded cog `{}`.".format(extension))
+        await bot.say(bot.msg_prefix + "Loaded cog `{}`.".format(extension))
 
 
 @bot.command(pass_context=True, hidden=True)
@@ -127,9 +131,9 @@ async def unload(ctx, *, extension: str):
         bot.unload_extension("{}".format(extension))
     except Exception as e:
         bot.logger.error("".join(traceback.format_exception(type(e), e.__cause__, e.__traceback__)))
-        await bot.say("\U0001f916 Could not unload `{}` -> `{}`".format(extension, e))
+        await bot.say(bot.msg_prefix + "Could not unload `{}` -> `{}`".format(extension, e))
     else:
-        await bot.say("\U0001f916 Unloaded `{}`.".format(extension))
+        await bot.say(bot.msg_prefix + "Unloaded `{}`.".format(extension))
 
 
 @bot.command(pass_context=True, hidden=True)
@@ -144,14 +148,15 @@ async def debug(ctx, *, command: str):
     except Exception as e:
         result = repr(e)
     if config["token"] in str(result):
-        fmt = "Doing this would reveal my token!!!"
+        fmt = bot.msg_prefix + "Doing this would reveal my token!!!"
     else:
         fmt = "```xl\nInput: {}\nOutput: {}\nOutput class: {}```".format(command, result, result.__class__.__name__)
     await bot.edit_message(ctx.message, new_content=fmt)
 
+
 if __name__ == '__main__':
-    if config["token"]:
-        for extension in config['auto_load']:
+    if config.get('token', ""):
+        for extension in config.get('auto_load', []):
             try:
                 bot.load_extension(extension)
                 bot.logger.info("Successfully loaded {}".format(extension))
@@ -160,4 +165,4 @@ if __name__ == '__main__':
         bot.logger.info("Logging in...\n\n\n")
         bot.run(config['token'], bot=False)
     else:
-        bot.logger.info("Please add the bot's token to the config file!")
+        bot.logger.info("Please add the token to the config file!")
