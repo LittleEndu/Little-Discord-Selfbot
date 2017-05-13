@@ -283,6 +283,28 @@ class Memes:
         else:
             await self.bot.say(self.bot.msg_prefix + "All memes are already clean")
 
+    @commands.command(pass_context=True)
+    async def listinstantmemes(self, ctx):
+        """
+        Lists all memes that have some instants
+        """
+        ll = list()
+        for meme in self.memes:
+            assert isinstance(meme, dict)
+            if meme.get('instants', list()):
+                ll.append("``{} -> {}``".format(", ".join(meme['instants']), " ".join(meme['tags'])))
+        if ll:
+            mmm = self.bot.msg_prefix
+            for l in ll:
+                next_m = l + ", "
+                if len(mmm + next_m) < 2000:
+                    mmm += next_m
+                else:
+                    await self.bot.say(mmm[:-2])
+                    mmm = self.bot.msg_prefix + next_m
+            await self.bot.say(mmm[:-2])
+
+
     @commands.group(pass_context=True)
     async def lastmeme(self, ctx):
         """
@@ -340,10 +362,9 @@ class Memes:
                 await self.bot.say(self.bot.msg_prefix + "Instant ``{}`` already in use.".format(s))
             else:
                 self._last_meme.setdefault('instants', list()).append(s)
+                await self.bot.say(self.bot.msg_prefix + "Added")
         self.memes[index] = self._last_meme
         self.save_memes()
-        await self.bot.say(self.bot.msg_prefix + "Added")
-
 
 
 def setup(bot):
