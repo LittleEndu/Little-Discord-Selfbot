@@ -15,7 +15,7 @@ class Fun:
         """
         Says "polo"
         """
-        await self.bot.say("polo")
+        await self.bot.say(self.bot.msg_prefix + "polo")
 
     @commands.command(pass_context=True)
     async def soon(self, ctx, *, message: str = ""):
@@ -73,7 +73,7 @@ class Fun:
         """
         if ctx.message.author.permissions_in(ctx.message.channel).embed_links:
             em = discord.Embed(color=member.color)
-            em.set_author(name="WHOIS for {}#{}".format(member.name, member.discriminator))
+            # em.set_author(name="WHOIS for user {}#{}".format(member.name, member.discriminator))
             if member.display_name != member.name:
                 em.add_field(name="Display name", value=member.display_name)
             em.add_field(name="Created at", value=member.created_at)
