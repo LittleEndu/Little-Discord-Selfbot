@@ -1,4 +1,3 @@
-import asyncio
 import html
 import re
 
@@ -11,6 +10,10 @@ from discord.ext import commands
 
 
 class Mal:
+    """
+    Finds info about some anime on MAL
+    """
+
     def __init__(self, bot):
         self.bot = bot
         self.LINK_ANIME_SEARCH = "https://myanimelist.net/anime.php?q={}"
@@ -173,7 +176,18 @@ class Mal:
                     em.add_field(name="Synopsis", value=synopsis)
 
         em.add_field(name="Status", value=anime_info.get('status', "Unknown"))
-        await self.bot.send_message(ctx.message.channel, embed=em)
+        if ctx.message.author.permissions_in(ctx.message.channel).embed_links:
+            await self.bot.send_message(ctx.message.channel, embed=em)
+        else:
+            await self.bot.say(self.bot.msg_prefix + "Here you go: {}".format(results[0][2]))
+            msg_fields = list()
+            for field in em.fields:
+                if field.name == "Synopsis":
+                    continue
+                msg_fields.append("{}: {}".format(field.name, field.value))
+            msg = "```{}\n{}```".format(anime_info['name'], "\n".join(msg_fields))
+            await self.bot.say(msg)
+
         await self.bot.delete_message(to_del)
 
 

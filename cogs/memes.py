@@ -1,6 +1,3 @@
-"""
-Meme responses
-"""
 import asyncio
 import json
 import os
@@ -87,7 +84,7 @@ class Memes:
                 url = ctx.message.attachments[0]['url']
             async with aiohttp.ClientSession() as session:
                 async with session.post(self.IMGUR_API_LINK,
-                                        params={'image': url, 'type': "URL"},
+                                        data={'image': url, 'type': "URL"},
                                         headers={"Authorization": "Client-ID {}".format(
                                             self.config['imgur_client_id'])}) as response:
                     response_json = json.loads(await response.text())
