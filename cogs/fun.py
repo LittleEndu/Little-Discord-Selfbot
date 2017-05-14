@@ -59,7 +59,7 @@ class Fun:
         But only if they are in the first 1000 messages
         """
         count += 1
-        iterator = self.bot.logs_from(ctx.channel, limit=1000)
+        iterator = self.bot.logs_from(ctx.message.channel, limit=1000)
         async for m in iterator:
             if isinstance(m, discord.Message):
                 if (m.author == ctx.author):
