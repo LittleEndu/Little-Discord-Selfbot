@@ -41,7 +41,7 @@ class Memes:
         for meme in self.memes:
             assert isinstance(meme, dict)
             for b_tag in before_tags:
-                for m_tag in meme['tags'] + meme['instants']:
+                for m_tag in meme['tags'] + meme.get('instants', list()):
                     if b_tag in m_tag:
                         search_tags.append(b_tag)
                         break
