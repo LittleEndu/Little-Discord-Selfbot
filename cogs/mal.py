@@ -101,10 +101,16 @@ class Mal:
                         args["score"] = float(darktext.parent.text.split(":")[-1].split("(")[0].strip())
                     except:
                         args["score"] = None
-        synopsis = soup.find("span", attrs={"itemprop": "description"})
-        args['synopsis'] = synopsis.text
-        thumbnail_link = soup.find("img", attrs={"itemprop": "image", "class": "ac"}).get("src")
-        args['thumbnail_link'] = thumbnail_link
+        try:
+            synopsis = soup.find("span", attrs={"itemprop": "description"})
+            args['synopsis'] = synopsis.text
+        except:
+            args['synopsis'] = None
+        try:
+            thumbnail_link = soup.find("img", attrs={"itemprop": "image", "class": "ac"}).get("src")
+            args['thumbnail_link'] = thumbnail_link
+        except:
+            args['thumbnail_link'] = "https://puu.sh/vPxRa/6f563946ec.png"
         return args
 
     async def mal_search(self, search_query: str, link: str = None, is_anime=True):
@@ -140,11 +146,28 @@ class Mal:
         results = await self.mal_search(search_for)
         anime_info = self.process_single_soup(await self.get_soup(results[0][2]))
         em = discord.Embed(description=results[0][2])
+        em.set_author(name=anime_info['name'])
         em.set_thumbnail(url=anime_info['thumbnail_link'])
         if anime_info['episodes']:
             em.add_field(name="Episodes", value=anime_info['episodes'])
         if anime_info['score']:
             em.add_field(name="Score", value=anime_info['score'])
+        if anime_info['airedfrom']:
+            if anime_info['airedto']:
+                em.add_field(name="Airing dates",
+                             value="{} to {}".format(anime_info['airedfrom'], anime_info['airedto']))
+            else:
+                em.add_field(name="Airing date", value=anime_info['airedfrom'])
+        if anime_info['rating']:
+            em.add_field(name="Rating", value=anime_info['rating'])
+        if anime_info['synopsis']:
+            synopsis = anime_info['synopsis']
+            if len(synopsis) > 20:
+                if len(synopsis) > 300:
+                    em.add_field(name="Synopsis", value=synopsis[:300] + "... [More]({})".format(results[0][2]))
+                else:
+                    em.add_field(name="Synopsis", value=synopsis)
+
         em.add_field(name="Status", value=anime_info['status'])
         await self.bot.send_message(ctx.message.channel, embed=em)
         await self.bot.delete_message(to_del)
