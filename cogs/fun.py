@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 
@@ -65,6 +67,15 @@ class Fun:
                     count -= 1
                     if count <= 0:
                         return
+
+    @commands.command(pass_context=True, hidden=True)
+    async def whois(self, ctx, *, ingnore: str = ""):
+        """
+        Let's just ingore that
+        """
+        to_del = await self.bot.say(self.bot.msg_prefix + "Use debug...")
+        await asyncio.sleep(5)
+        await self.bot.delete_message(to_del)
 
     def _calculate_mutual_servers(self, member: discord.Member):
         # Calculates mutual servers.
