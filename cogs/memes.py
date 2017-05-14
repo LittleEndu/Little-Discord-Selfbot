@@ -33,7 +33,7 @@ class Memes:
     def normalize(self, string: str):
         return string.replace("'", "").replace("fuck", "fck").lower()
 
-    def find_best_meme(self, search_for):
+    def find_best_meme(self, search_for, user_instants=True):
         memes = []
         search_tags = self.normalize(search_for).split()
         for meme in self.memes:
@@ -41,9 +41,10 @@ class Memes:
             will_add = True
             for s_tag in search_tags:
                 is_in = False
-                for instant in meme.get('instants', list()):
-                    if s_tag in instant:
-                        return [meme]
+                if user_instants:
+                    for instant in meme.get('instants', list()):
+                        if s_tag in instant:
+                            return [meme]
                 for m_tag in meme['tags']:
                     if s_tag in m_tag:
                         is_in = True
@@ -227,16 +228,21 @@ class Memes:
         """
         self.save_memes()
         if search_for:
-            memes = self.find_best_meme(search_for)
+            memes = self.find_best_meme(search_for, False)
+            instants = self.find_best_meme(search_for)
         else:
             memes = self.memes
+            instants = []
         if not memes:
             await self.bot.say(self.bot.msg_prefix + "Unable to find anything")
             return
         mmm = self.bot.msg_prefix
         counter = 1
         for meme in memes:
-            next_m = "``{}: {}``, ".format(counter, " ".join(meme['tags']))
+            if meme in instants:
+                next_m = "``{}: {} -> {}``, ".format(counter, ", ".join(meme['instants']), " ".join(meme['tags']))
+            else:
+                next_m = "``{}: {}``, ".format(counter, " ".join(meme['tags']))
             counter += 1
             if len(next_m + mmm) < 2000:
                 mmm += next_m
@@ -253,7 +259,7 @@ class Memes:
         tag_changes = []
         for meme in self.memes:
             assert isinstance(meme, dict)
-            final_tags = meme['tags']
+            final_tags = [self.normalize(i) for i in meme['tags']]
             for tag1 in final_tags[:]:
                 one_skip = True
                 for tag2 in final_tags[:]:
@@ -282,7 +288,7 @@ class Memes:
         else:
             await self.bot.say(self.bot.msg_prefix + "All memes are already clean")
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['listintants'])
     async def listinstantmemes(self, ctx):
         """
         Lists all memes that have some instants
