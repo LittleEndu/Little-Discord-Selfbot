@@ -166,6 +166,7 @@ class Mal:
             synopsis = anime_info['synopsis']
             if len(synopsis) > 20:
                 if len(synopsis) > 300:
+                    synopsis = " ".join(synopsis[:300].split()[:-1])
                     em.add_field(name="Synopsis", value=synopsis[:300] + "... [More]({})".format(results[0][2]))
                 else:
                     em.add_field(name="Synopsis", value=synopsis)
