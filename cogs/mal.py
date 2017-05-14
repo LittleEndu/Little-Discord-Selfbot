@@ -113,7 +113,6 @@ class Mal:
             args['thumbnail_link'] = thumbnail_link
         except:
             args['thumbnail_link'] = "https://puu.sh/vPxRa/6f563946ec.png"
-        self.bot.logger.info(args)
         return args
 
     async def mal_search(self, search_query: str, link: str = None, is_anime=True):
@@ -151,20 +150,20 @@ class Mal:
         em = discord.Embed(description=results[0][2])
         em.set_author(name=anime_info['name'])
         em.set_thumbnail(url=anime_info['thumbnail_link'])
-        if anime_info['episodes']:
+        if anime_info.get('episodes', None):
             if anime_info['episodes'] > 1:
                 em.add_field(name="Episodes", value=anime_info['episodes'])
-        if anime_info['score']:
+        if anime_info.get('score', None):
             em.add_field(name="Score", value=anime_info['score'])
         if anime_info.get('airedfrom', None):
             if anime_info.get('airedto', None):
                 em.add_field(name="Airing dates",
-                             value="{} to {}".format(anime_info['airedfrom'], anime_info['airedto']))
+                             value="{} to {}".format(anime_info['airedfrom'].date(), anime_info['airedto'].date()))
             else:
-                em.add_field(name="Airing date", value=anime_info['airedfrom'])
-        if anime_info['rating']:
+                em.add_field(name="Airing date", value=anime_info['airedfrom'].date())
+        if anime_info.get('Rating', None):
             em.add_field(name="Rating", value=anime_info['rating'])
-        if anime_info['synopsis']:
+        if anime_info.get('synopsis', None):
             synopsis = anime_info['synopsis']
             if len(synopsis) > 20:
                 if len(synopsis) > 300:
@@ -173,7 +172,7 @@ class Mal:
                 else:
                     em.add_field(name="Synopsis", value=synopsis)
 
-        em.add_field(name="Status", value=anime_info['status'])
+        em.add_field(name="Status", value=anime_info.get('status', "Unknown"))
         await self.bot.send_message(ctx.message.channel, embed=em)
         await self.bot.delete_message(to_del)
 
