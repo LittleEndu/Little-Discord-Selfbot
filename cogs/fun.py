@@ -72,12 +72,12 @@ class Fun:
         Info about member
         """
         if ctx.message.author.permissions_in(ctx.message.channel).embed_links:
-            em = discord.Embed(color=member.color)
-            # em.set_author(name="WHOIS for user {}#{}".format(member.name, member.discriminator))
+            em = discord.Embed(title="WHOIS for user {}#{}".format(member.name, member.discriminator),
+                               color=member.color)
             if member.display_name != member.name:
                 em.add_field(name="Display name", value=member.display_name)
-            em.add_field(name="Created at", value=member.created_at)
-            em.add_field(name="Joined at", value=member.joined_at)
+            em.add_field(name="Created at", value=str(member.created_at))
+            em.add_field(name="Joined at", value=str(member.joined_at))
             em.add_field(name="Color", value=str(member.color))
             em.add_field(name="Roles", value=", ".join(self._safe_roles(member.roles)))
             em.add_field(name="Mutual servers", value=", ".join(self._calculate_mutual_servers(member)))
