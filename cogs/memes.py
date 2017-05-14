@@ -220,11 +220,12 @@ class Memes:
                     pass
         await self.bot.say(self.bot.msg_prefix + "Didn't find such meme")
 
-    @commands.command(pass_context=True)
+    @commands.command(pass_context=True, aliases=['findmeme'])
     async def listmemes(self, ctx, *, search_for: str = ""):
         """
         Lists memes
         """
+        self.save_memes()
         if search_for:
             memes = self.find_best_meme(search_for)
         else:
