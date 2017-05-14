@@ -113,7 +113,7 @@ class Mal:
             args['thumbnail_link'] = thumbnail_link
         except:
             args['thumbnail_link'] = "https://puu.sh/vPxRa/6f563946ec.png"
-        self.bot.logger.debug(args)
+        self.bot.logger.info(args)
         return args
 
     async def mal_search(self, search_query: str, link: str = None, is_anime=True):
@@ -152,7 +152,8 @@ class Mal:
         em.set_author(name=anime_info['name'])
         em.set_thumbnail(url=anime_info['thumbnail_link'])
         if anime_info['episodes']:
-            em.add_field(name="Episodes", value=anime_info['episodes'])
+            if anime_info['episodes'] > 1:
+                em.add_field(name="Episodes", value=anime_info['episodes'])
         if anime_info['score']:
             em.add_field(name="Score", value=anime_info['score'])
         if anime_info.get('airedfrom', None):
