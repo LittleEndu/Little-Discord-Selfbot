@@ -136,16 +136,18 @@ class Mal:
         """
         Searches and displays anime
         """
+        to_del = await self.bot.say(self.bot.msg_prefix + "Searching \U0001f30f \U0001f50d")
         results = await self.mal_search(search_for)
         anime_info = self.process_single_soup(await self.get_soup(results[0][2]))
         em = discord.Embed(description=results[0][2])
-        em.set_thumbnail(url=anime_info['tumbnail_link'])
+        em.set_thumbnail(url=anime_info['thumbnail_link'])
         if anime_info['episodes']:
             em.add_field(name="Episodes", value=anime_info['episodes'])
         if anime_info['score']:
             em.add_field(name="Score", value=anime_info['score'])
         em.add_field(name="Status", value=anime_info['status'])
         await self.bot.send_message(ctx.message.channel, embed=em)
+        await self.bot.delete_message(to_del)
 
 
 def setup(bot):
