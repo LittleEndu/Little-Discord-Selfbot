@@ -40,7 +40,7 @@ class Mal:
                         args["episodes"] = None
                 elif darktext.string == "Status:":
                     args["status"] = darktext.parent.text.split(":")[-1].strip()
-                elif darktext.string == "Aired":
+                elif darktext.string == "Aired:":
                     aired_parts = darktext.parent.text.split(":")[-1].strip().split(" to ")
                     if len(aired_parts) == 1:
                         try:
