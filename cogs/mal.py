@@ -144,7 +144,8 @@ class Mal:
             em.add_field(name="Episodes", value=anime_info['episodes'])
         if anime_info['score']:
             em.add_field(name="Score", value=anime_info['score'])
-        em.add_field(name="Status", vlue=anime_info['status'])
+        em.add_field(name="Status", value=anime_info['status'])
+        await self.bot.send_message(ctx.message.channel, embed=em)
 
 
 def setup(bot):
