@@ -113,6 +113,7 @@ class Mal:
             args['thumbnail_link'] = thumbnail_link
         except:
             args['thumbnail_link'] = "https://puu.sh/vPxRa/6f563946ec.png"
+        self.bot.logger.debug(args)
         return args
 
     async def mal_search(self, search_query: str, link: str = None, is_anime=True):
