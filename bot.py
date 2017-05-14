@@ -152,7 +152,7 @@ async def debug(ctx, *, command: str):
         fmt = bot.msg_prefix + "Doing this would reveal my token!!!"
     else:
         fmt = "```xl\nInput: {}\nOutput: {}\nOutput class: {}```".format(command, result, result.__class__.__name__)
-    await asyncio.sleep(0.05)
+    await asyncio.sleep(0.5)
     await bot.edit_message(ctx.message, new_content=fmt)
 
 
