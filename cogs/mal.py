@@ -50,9 +50,11 @@ class Mal:
                     else:
                         try:
                             args["airedfrom"] = dateutil.parser.parse(aired_parts[0])
-                            args["airedto"] = dateutil.parser.parse(aired_parts[1])
                         except:
                             args["airedfrom"] = None
+                        try:
+                            args["airedto"] = dateutil.parser.parse(aired_parts[1])
+                        except:
                             args["airedto"] = None
                 elif darktext.string == "Premiered:":
                     args["premiered"] = darktext.parent.text.split(":")[-1].strip()
@@ -152,8 +154,8 @@ class Mal:
             em.add_field(name="Episodes", value=anime_info['episodes'])
         if anime_info['score']:
             em.add_field(name="Score", value=anime_info['score'])
-        if anime_info['airedfrom']:
-            if anime_info['airedto']:
+        if anime_info.get('airedfrom', None):
+            if anime_info.get('airedto', None):
                 em.add_field(name="Airing dates",
                              value="{} to {}".format(anime_info['airedfrom'], anime_info['airedto']))
             else:
