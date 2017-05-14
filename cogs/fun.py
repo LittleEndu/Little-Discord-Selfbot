@@ -66,32 +66,6 @@ class Fun:
                     if count <= 0:
                         return
 
-    @commands.command(pass_context=True)
-    async def whois(self, ctx, *, member: discord.Member):
-        """
-        Info about member
-        """
-        if ctx.message.author.permissions_in(ctx.message.channel).embed_links:
-            em = discord.Embed(title="WHOIS for user {}#{}".format(member.name, member.discriminator),
-                               color=member.color)
-            if member.display_name != member.name:
-                em.add_field(name="Display name", value=member.display_name)
-            em.add_field(name="Created at", value=str(member.created_at))
-            em.add_field(name="Joined at", value=str(member.joined_at))
-            em.add_field(name="Color", value=str(member.color))
-            await self.bot.send_message(ctx.message.channel, embed=em)
-        else:
-            msg = self.bot.msg_prefix + """WHOIS for user {m}:
-
-```xl
-Username: {member.name}#{member.discriminator}
-Display name: {member.display_name}
-User ID: {member.id}
-Colour: {member.colour}
-Created: {cr}
-Joined: {jr}```""".format(m=str(member), member=member, cr=member.created_at, jr=member.joined_at)
-            await self.bot.say(msg)
-
     def _calculate_mutual_servers(self, member: discord.Member):
         # Calculates mutual servers.
         serverlist = []
