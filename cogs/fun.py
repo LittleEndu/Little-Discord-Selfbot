@@ -79,8 +79,6 @@ class Fun:
             em.add_field(name="Created at", value=str(member.created_at))
             em.add_field(name="Joined at", value=str(member.joined_at))
             em.add_field(name="Color", value=str(member.color))
-            em.add_field(name="Roles", value=", ".join(self._safe_roles(member.roles)))
-            em.add_field(name="Mutual servers", value=", ".join(self._calculate_mutual_servers(member)))
             await self.bot.send_message(ctx.message.channel, embed=em)
         else:
             msg = self.bot.msg_prefix + """WHOIS for user {m}:
@@ -89,17 +87,9 @@ class Fun:
 Username: {member.name}#{member.discriminator}
 Display name: {member.display_name}
 User ID: {member.id}
-
-Created: {cr}
-Joined: {jr}
-
 Colour: {member.colour}
-Roles: {roles}
-
-Mutual servers: {mut}```""".format(m=str(member), member=member,
-                                   cr=member.created_at, jr=member.joined_at,
-                                   mut=str(self._calculate_mutual_servers(member)),
-                                   roles=', '.join(self._safe_roles(member.roles)))
+Created: {cr}
+Joined: {jr}```""".format(m=str(member), member=member, cr=member.created_at, jr=member.joined_at)
             await self.bot.say(msg)
 
     def _calculate_mutual_servers(self, member: discord.Member):
