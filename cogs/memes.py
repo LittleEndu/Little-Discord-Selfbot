@@ -240,7 +240,8 @@ class Memes:
         counter = 1
         for meme in memes:
             if meme in instants:
-                next_m = "``{}: {} -> {}``, ".format(counter, ", ".join(meme['instants']), " ".join(meme['tags']))
+                next_m = "``{} (instants: {}): {}``, ".format(counter, ", ".join(meme['instants']),
+                                                              " ".join(meme['tags']))
             else:
                 next_m = "``{}: {}``, ".format(counter, " ".join(meme['tags']))
             counter += 1
