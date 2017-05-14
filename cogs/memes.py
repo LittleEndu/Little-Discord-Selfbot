@@ -229,17 +229,15 @@ class Memes:
         self.save_memes()
         if search_for:
             memes = self.find_best_meme(search_for, False)
-            instants = self.find_best_meme(search_for)
         else:
             memes = self.memes
-            instants = []
         if not memes:
             await self.bot.say(self.bot.msg_prefix + "Unable to find anything")
             return
         mmm = self.bot.msg_prefix
         counter = 1
         for meme in memes:
-            if meme in instants:
+            if meme.get('instants', []):
                 next_m = "``{} (instants: {}): {}``, ".format(counter, ", ".join(meme['instants']),
                                                               " ".join(meme['tags']))
             else:
