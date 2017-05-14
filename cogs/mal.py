@@ -135,7 +135,7 @@ class Mal:
     async def get_soup(self, link):
         async with aiohttp.ClientSession() as session:
             async with session.get(link) as response:
-                return BS(await response.read())
+                return BS(await response.read(), "lxml")
 
     @commands.command(pass_context=True)
     async def findanime(self, ctx, *, search_for: str):
