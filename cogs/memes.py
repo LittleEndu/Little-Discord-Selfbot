@@ -105,6 +105,7 @@ class Memes:
                             'link': response_json['data']['link']}
                     self.memes.append(info)
                     self.save_memes()
+                    self._last_meme = info
                     to_del = await self.bot.say(self.bot.msg_prefix + "\U0001f44d")
                     await asyncio.sleep(5)
                     await self.bot.delete_message(to_del)

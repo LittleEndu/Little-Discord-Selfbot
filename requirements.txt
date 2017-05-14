@@ -1,3 +1,4 @@
+async_timeout
 discord.py==0.16.7
 aiohttp==1.0.2
 Logbook==1.0.0
