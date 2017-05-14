@@ -33,17 +33,30 @@ class Memes:
     def normalize(self, string: str):
         return string.replace("'", "").replace("fuck", "fck").lower()
 
-    def find_best_meme(self, search_for, user_instants=True):
+    def find_best_meme(self, search_for, use_instants=True):
         memes = []
-        search_tags = self.normalize(search_for).split()
+        before_tags = self.normalize(search_for).split()
+        search_tags = []
+
+        for meme in self.memes:
+            assert isinstance(meme, dict)
+            for b_tag in before_tags:
+                for m_tag in meme['tags'] + meme['instants']:
+                    if b_tag in m_tag:
+                        search_tags.append(b_tag)
+                        break
+
+        if len(search_tags) > 1:
+            use_instants = False
+
         for meme in self.memes:
             assert isinstance(meme, dict)
             will_add = True
             for s_tag in search_tags:
                 is_in = False
-                if user_instants:
+                if use_instants:
                     for instant in meme.get('instants', list()):
-                        if s_tag in instant:
+                        if s_tag == instant:
                             return [meme]
                 for m_tag in meme['tags']:
                     if s_tag in m_tag:
@@ -307,7 +320,6 @@ class Memes:
                     await self.bot.say(mmm[:-2])
                     mmm = self.bot.msg_prefix + next_m
             await self.bot.say(mmm[:-2])
-
 
     @commands.group(pass_context=True)
     async def lastmeme(self, ctx):
