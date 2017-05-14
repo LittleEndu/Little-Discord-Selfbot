@@ -62,7 +62,7 @@ class Fun:
         iterator = self.bot.logs_from(ctx.message.channel, limit=1000)
         async for m in iterator:
             if isinstance(m, discord.Message):
-                if (m.author == ctx.author):
+                if m.author == ctx.message.author:
                     await self.bot.delete_message(m)
                     count -= 1
                     if count <= 0:
