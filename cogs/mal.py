@@ -62,7 +62,7 @@ class Mal:
                 elif darktext.string == "Premiered:":
                     args["premiered"] = darktext.parent.text.split(":")[-1].strip()
                 elif darktext.string == "Broadcast:":
-                    args["broadcast"] = darktext.parent.text.split(":")[-1].strip()
+                    args["broadcast"] = ":".join(darktext.parent.text.split(":")[1:]).strip()
                 elif darktext.string == "Producers:":
                     ids = []
                     for a in darktext.parent.find_all("a"):
