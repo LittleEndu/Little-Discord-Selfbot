@@ -164,7 +164,7 @@ class Mal:
                              value="{} to {}".format(anime_info['airedfrom'].date(), anime_info['airedto'].date()))
             else:
                 em.add_field(name="Airing date", value=anime_info['airedfrom'].date())
-        if anime_info.get('Rating', None):
+        if anime_info.get('rating', None):
             em.add_field(name="Rating", value=anime_info['rating'])
         if anime_info.get('synopsis', None):
             synopsis = anime_info['synopsis']
