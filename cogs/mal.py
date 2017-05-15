@@ -61,6 +61,8 @@ class Mal:
                             args["airedto"] = None
                 elif darktext.string == "Premiered:":
                     args["premiered"] = darktext.parent.text.split(":")[-1].strip()
+                elif darktext.string == "Broadcast:":
+                    args["broadcast"] = darktext.parent.text.split(":")[-1].strip()
                 elif darktext.string == "Producers:":
                     ids = []
                     for a in darktext.parent.find_all("a"):
@@ -174,8 +176,10 @@ class Mal:
                     em.add_field(name="Synopsis", value=synopsis[:300] + "... [More]({})".format(results[0][2]))
                 else:
                     em.add_field(name="Synopsis", value=synopsis)
-
-        em.add_field(name="Status", value=anime_info.get('status', "Unknown"))
+        if "Currently" in anime_info.get('status', ""):
+            em.add_field(name="Status", value="Currently Airing {}".format(anime_info.get('broadcast')))
+        else:
+            em.add_field(name="Status", value=anime_info.get('status', "Unknown"))
         if ctx.message.author.permissions_in(ctx.message.channel).embed_links:
             await self.bot.send_message(ctx.message.channel, embed=em)
         else:
