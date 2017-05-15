@@ -46,6 +46,9 @@ class Memes:
                         search_tags.append(b_tag)
                         break
 
+        if not search_tags:
+            return []
+
         if len(search_tags) > 1:
             use_instants = False
 
