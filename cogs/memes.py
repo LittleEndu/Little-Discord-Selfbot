@@ -389,6 +389,7 @@ class Memes:
         Removes the lastmeme
         """
         meme = self._last_meme
+        self.memes.remove(meme)
         async with aiohttp.ClientSession() as session:
             async with session.delete(self.IMGUR_API_LINK + "/{}".format(meme['delete_hash']),
                                       headers={"Authorization": "Client-ID {}".format(
@@ -398,6 +399,7 @@ class Memes:
                     await self.bot.say(self.bot.msg_prefix + "Successfully deleted")
                 else:
                     await self.bot.say(self.bot.msg_prefix + "Local pointer deleted, imgur refused to delete...")
+        self.save_memes()
 
 
 def setup(bot):
