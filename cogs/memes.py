@@ -134,20 +134,18 @@ class Memes:
         """
         memes = self.find_best_meme(search_for)
         if memes:
-            if len(memes) > 1:
-                await self.bot.say(self.bot.msg_prefix + "That returned more than one meme... Aborting...")
-                return
-            meme = memes[0]
-            self.memes.remove(meme)
-            async with aiohttp.ClientSession() as session:
-                async with session.delete(self.IMGUR_API_LINK + "/{}".format(meme['delete_hash']),
-                                          headers={"Authorization": "Client-ID {}".format(
-                                              self.config['imgur_client_id'])}) as response:
-                    response_json = json.loads(await response.text())
-                    if response_json['success']:
-                        await self.bot.say(self.bot.msg_prefix + "Successfully deleted")
-                    else:
-                        await self.bot.say(self.bot.msg_prefix + "Local pointer deleted, imgur refused to delete...")
+            for meme in memes:
+                self.memes.remove(meme)
+                async with aiohttp.ClientSession() as session:
+                    async with session.delete(self.IMGUR_API_LINK + "/{}".format(meme['delete_hash']),
+                                              headers={"Authorization": "Client-ID {}".format(
+                                                  self.config['imgur_client_id'])}) as response:
+                        response_json = json.loads(await response.text())
+                        if response_json['success']:
+                            await self.bot.say(self.bot.msg_prefix + "Successfully deleted")
+                        else:
+                            await self.bot.say(
+                                self.bot.msg_prefix + "Local pointer deleted, imgur refused to delete...")
             self.save_memes()
         else:
             await self.bot.say(self.bot.msg_prefix + "Didn't find such meme")
@@ -384,6 +382,22 @@ class Memes:
                 await self.bot.say(self.bot.msg_prefix + "Added")
         self.memes[index] = self._last_meme
         self.save_memes()
+
+    @lastmeme.command(pass_context=True, aliases=["delete"])
+    async def remove(self, ctx):
+        """
+        Removes the lastmeme
+        """
+        meme = self._last_meme
+        async with aiohttp.ClientSession() as session:
+            async with session.delete(self.IMGUR_API_LINK + "/{}".format(meme['delete_hash']),
+                                      headers={"Authorization": "Client-ID {}".format(
+                                          self.config['imgur_client_id'])}) as response:
+                response_json = json.loads(await response.text())
+                if response_json['success']:
+                    await self.bot.say(self.bot.msg_prefix + "Successfully deleted")
+                else:
+                    await self.bot.say(self.bot.msg_prefix + "Local pointer deleted, imgur refused to delete...")
 
 
 def setup(bot):
