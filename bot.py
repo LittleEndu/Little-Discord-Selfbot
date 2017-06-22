@@ -26,7 +26,7 @@ bot.config = config
 bot.msg_prefix = "\U0001f916 "
 bot.logger = logbook.Logger("Selfbot")
 bot.logger.handlers.append(
-    logbook.FileHandler("logs/" + str(datetime.now().date()) + ".log", level="INFO", bubble=True))
+    logbook.FileHandler("logs/" + str(datetime.now().date()) + ".log", level="TRACE", bubble=True))
 bot.logger.handlers.append(logbook.StreamHandler(sys.stderr, level='INFO', bubble=True))
 logging.root.setLevel(logging.INFO)
 

@@ -31,7 +31,7 @@ class Memes:
             json.dump(self.memes, file_out)
 
     def normalize(self, string: str):
-        return string.replace("'", "").replace("fuck", "fck").lower()
+        return string.replace("'", "").replace("fuck", "fck").lower().strip()
 
     def find_best_meme(self, search_for, use_instants=True):
         memes = []
@@ -51,6 +51,10 @@ class Memes:
 
         if len(search_tags) > 1:
             use_instants = False
+
+        self.bot.logger.trace(
+            'find_best_meme with search_for="{}" before_tags={} search_tags={} use_instants={}').format(
+            search_for, ", ".join(before_tags), ", ".join(search_tags), use_instants)
 
         for meme in self.memes:
             assert isinstance(meme, dict)
@@ -235,7 +239,7 @@ class Memes:
                     pass
         await self.bot.say(self.bot.msg_prefix + "Didn't find such meme")
 
-    @commands.command(pass_context=True, aliases=['findmeme'])
+    @commands.command(pass_context=True, aliases=['findmemes', 'findmeme', 'listmeme'])
     async def listmemes(self, ctx, *, search_for: str = ""):
         """
         Lists memes
@@ -251,6 +255,7 @@ class Memes:
         mmm = self.bot.msg_prefix
         counter = 1
         for meme in memes:
+            assert isinstance(meme, dict)
             if meme.get('instants', []):
                 next_m = "``{} (instants: {}): {}``, ".format(counter, ", ".join(meme['instants']),
                                                               " ".join(meme['tags']))
