@@ -53,8 +53,8 @@ class Memes:
             use_instants = False
 
         self.bot.logger.trace(
-            'find_best_meme with search_for="{}" before_tags={} search_tags={} use_instants={}').format(
-            search_for, ", ".join(before_tags), ", ".join(search_tags), use_instants)
+            'find_best_meme with search_for="{}" before_tags={} search_tags={} use_instants={}'.format(
+                search_for, ", ".join(before_tags), ", ".join(search_tags), use_instants))
 
         for meme in self.memes:
             assert isinstance(meme, dict)
