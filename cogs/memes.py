@@ -36,14 +36,14 @@ class Memes:
     def find_best_meme(self, search_for, use_instants=True):
         memes = []
         before_tags = self.normalize(search_for).split()
-        search_tags = []
+        search_tags = set()
 
         for meme in self.memes:
             assert isinstance(meme, dict)
             for b_tag in before_tags:
                 for m_tag in meme['tags'] + meme.get('instants', list()):
                     if b_tag in m_tag:
-                        search_tags.append(b_tag)
+                        search_tags.add(b_tag)
                         break
 
         if not search_tags:
@@ -53,7 +53,7 @@ class Memes:
             use_instants = False
 
         self.bot.logger.trace(
-            'find_best_meme with search_for="{}" before_tags={} search_tags={} use_instants={}'.format(
+            'find_best_meme with search_for="{}" before_tags=[{}] search_tags=\{{}\} use_instants={}'.format(
                 search_for, ", ".join(before_tags), ", ".join(search_tags), use_instants))
 
         for meme in self.memes:
