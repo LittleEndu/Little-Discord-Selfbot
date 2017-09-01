@@ -95,7 +95,7 @@ class Memes:
         await self.bot.delete_message(response)
         return string
 
-    @commands.command(pass_context=True, aliases=["addmeme"])
+    @commands.command(pass_context=True, aliases=["addmeme", "snagmeme"])
     async def savememe(self, ctx, url: str = ""):
         """
         Saves the uploaded image
@@ -227,13 +227,13 @@ class Memes:
         """
         for meme in self.memes[:]:
             assert isinstance(meme, dict)
-            if search_for in meme['instants']:
+            if search_for in meme.get('instants',list()):
                 assert isinstance(meme['instants'], list)
                 index = self.memes.index(meme)
                 try:
                     meme['instants'].remove(search_for)
                     self.memes[index] = meme
-                    await self.bot.say(self.bot.msg_prefix + "Remove instant meme")
+                    await self.bot.say(self.bot.msg_prefix + "Removed instant meme")
                     return
                 except ValueError:
                     pass
@@ -337,6 +337,66 @@ class Memes:
                 await self.bot.say(self.bot.msg_prefix + "You haven't used meme since last restart.")
                 return
             await self.bot.say(self.bot.msg_prefix + "Last meme is: ``{}``".format(" ".join(self._last_meme['tags'])))
+
+    @lastmeme.command(pass_context=True, aliases=['show','view'])
+    async def display(self, ctx):
+        """
+        Displays the meme
+        """
+        if ctx.message.author.permissions_in(ctx.message.channel).embed_links:
+            em = discord.Embed()
+            em.set_image(url=self._last_meme['link'])
+            await self.bot.send_message(ctx.message.channel, embed=em)
+        else:
+            await self.bot.say(self.bot.msg_prefix + self._last_meme['link'])
+        await asyncio.sleep(5)
+        await self.bot.delete_message(ctx.message)
+
+    @lastmeme.command(pass_context=True, aliases=['switch'])
+    async def change(self, ctx, url: str = ""):
+        """
+        Changes the last meme to the uploaded image
+        """
+        tags = self._last_meme['tags']
+        if not (len(ctx.message.attachments) > 0 or url):
+            self.bot.say(self.bot.msg_prefix + "You didn't include an image...")
+            return
+
+        await self.bot.say(self.bot.msg_prefix + "Deleting then uploading new one")
+
+        self.memes.remove(self._last_meme)
+        async with aiohttp.ClientSession() as session:
+            async with session.delete(self.IMGUR_API_LINK + "/{}".format(self._last_meme['delete_hash']),
+                                      headers={"Authorization": "Client-ID {}".format(
+                                          self.config['imgur_client_id'])}) as response:
+                response_json = json.loads(await response.text())
+                if response_json['success']:
+                    await self.bot.say(self.bot.msg_prefix + "Successfully deleted")
+                else:
+                    await self.bot.say(
+                        self.bot.msg_prefix + "Local pointer deleted, imgur refused to delete...")
+
+        if len(ctx.message.attachments) > 0:
+            url = ctx.message.attachments[0]['url']
+        async with aiohttp.ClientSession() as session:
+            async with session.post(self.IMGUR_API_LINK,
+                                    data={'image': url, 'type': "URL"},
+                                    headers={"Authorization": "Client-ID {}".format(
+                                        self.config['imgur_client_id'])}) as response:
+                response_json = json.loads(await response.text())
+                info = {'tags': tags,
+                        'delete_hash': response_json['data']['deletehash'],
+                        'width': response_json['data']['width'],
+                        'height': response_json['data']['height'],
+                        'id': response_json['data']['id'],
+                        'link': response_json['data']['link']}
+                self.memes.append(info)
+                self.save_memes()
+                self._last_meme = info
+                to_del = await self.bot.say(self.bot.msg_prefix + "\U0001f44d")
+                await asyncio.sleep(5)
+                await self.bot.delete_message(to_del)
+                await self.bot.delete_message(ctx.message)
 
     @lastmeme.command(pass_context=True, aliases=['addtags'])
     async def addtag(self, ctx, *, tags: str):
