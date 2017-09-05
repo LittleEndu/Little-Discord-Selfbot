@@ -86,10 +86,10 @@ class Memes:
                         return True
         return False
 
-    async def ask(self, ctx, question: str):
+    async def ask(self, question: str):
         to_del = await self.bot.say(self.bot.msg_prefix + question)
         await asyncio.sleep(0.5)
-        response = await self.bot.wait_for_message(author=ctx.message.author)
+        response = await self.bot.wait_for_message(author=self.bot.user)
         string = response.content
         await self.bot.delete_message(to_del)
         await self.bot.delete_message(response)
@@ -180,7 +180,7 @@ class Memes:
         """
         Will make instant access string for meme
         """
-        string = await self.ask(ctx, "What to search for?")
+        string = await self.ask("What to search for?")
         if not string:
             await self.bot.say(self.bot.msg_prefix + "Please specify string... Aborting...")
             return
@@ -196,7 +196,7 @@ class Memes:
             counter = 0
             for meme in memes:
                 mmm += "{}: {}\n".format(counter, meme['tags'])
-            string = await self.ask(ctx, "Choose what meme" + mmm)
+            string = await self.ask("Choose what meme" + mmm)
             try:
                 index = int(string)
             except:
@@ -210,7 +210,7 @@ class Memes:
         except ValueError:
             await self.bot.say(self.bot.msg_prefix + "Meme found was not in memes???")
             return
-        string = await self.ask(ctx, "What will be used for instant access?")
+        string = await self.ask("What will be used for instant access?")
         for s in string.split():
             if self.has_instants(s):
                 await self.bot.say(self.bot.msg_prefix + "Instant ``{}`` already in use.".format(s))

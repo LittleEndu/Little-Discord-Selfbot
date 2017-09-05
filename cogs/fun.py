@@ -62,11 +62,47 @@ class Fun:
         iterator = self.bot.logs_from(ctx.message.channel, limit=1000)
         async for m in iterator:
             if isinstance(m, discord.Message):
-                if m.author == ctx.message.author:
+                if m.author == self.bot.user:
                     await self.bot.delete_message(m)
                     count -= 1
                     if count <= 0:
                         return
+
+    async def ask(self, question: str):
+        to_del = await self.bot.say(self.bot.msg_prefix + question)
+        await asyncio.sleep(0.5)
+        response = await self.bot.wait_for_message(author=self.bot.user)
+        string = response.content
+        await self.bot.delete_message(to_del)
+        await self.bot.delete_message(response)
+        return string
+
+    @commands.command(pass_context=True)
+    async def nukemeplease(self, ctx):
+        """
+        Deletes all your messages from this channel
+        """
+        string = self.ask("This will delete all your messages from this channel. Are you sure you want to continue? Say ´yes´ to continue...")
+        if not string.lower().startswith("y"):
+            to_del = self.bot.say(self.bot.msg_prefix + "Oki... Aborting...")
+            await asyncio.sleep(5)
+            await self.bot.delete_message(to_del)
+            return
+
+        date = None
+        iterator = self.bot.logs_from(ctx.message.channel, limit=5000)
+        while True:
+            count = 0
+            async for m in iterator:
+                count += 1
+                if isinstance(m, discord.Message):
+                    date = m.timestamp
+                    if m.author == self.bot.user:
+                        await self.bot.delete_message(m)
+            if count == 0:
+                break
+            iterator = self.bot.logs_from(ctx.message.channel, limit=5000, before=date)
+
 
     @commands.command(pass_context=True, hidden=True)
     async def whois(self, ctx, *, ingnore: str = ""):
