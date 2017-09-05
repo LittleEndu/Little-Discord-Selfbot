@@ -82,7 +82,7 @@ class Fun:
         """
         Deletes all your messages from this channel
         """
-        string = await self.ask("This will delete all your messages from this channel. Are you sure you want to continue? Say ´´yes´´ to continue...")
+        string = await self.ask("This will delete all your messages from this channel. Are you sure you want to continue? Say ``yes`` to continue...")
         if not string.lower().startswith("y"):
             to_del = await self.bot.say(self.bot.msg_prefix + "Oki... Aborting...")
             await asyncio.sleep(5)
