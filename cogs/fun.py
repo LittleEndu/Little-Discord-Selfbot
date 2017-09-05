@@ -82,9 +82,9 @@ class Fun:
         """
         Deletes all your messages from this channel
         """
-        string = await self.ask("This will delete all your messages from this channel. Are you sure you want to continue? Say ´yes´ to continue...")
+        string = await self.ask("This will delete all your messages from this channel. Are you sure you want to continue? Say ´´yes´´ to continue...")
         if not string.lower().startswith("y"):
-            to_del = self.bot.say(self.bot.msg_prefix + "Oki... Aborting...")
+            to_del = await self.bot.say(self.bot.msg_prefix + "Oki... Aborting...")
             await asyncio.sleep(5)
             await self.bot.delete_message(to_del)
             return
@@ -99,6 +99,7 @@ class Fun:
                     date = m.timestamp
                     if m.author == self.bot.user:
                         await self.bot.delete_message(m)
+                        await asyncio.sleep(0.5)
             if count == 0:
                 break
             iterator = self.bot.logs_from(ctx.message.channel, limit=5000, before=date)
