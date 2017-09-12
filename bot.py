@@ -28,6 +28,7 @@ bot.logger = logbook.Logger("Selfbot")
 bot.logger.handlers.append(
     logbook.FileHandler("logs/" + str(datetime.now().date()) + ".log", level="TRACE", bubble=True))
 bot.logger.handlers.append(logbook.StreamHandler(sys.stderr, level='INFO', bubble=True))
+bot.running_debug = False
 logging.root.setLevel(logging.INFO)
 
 
@@ -142,29 +143,37 @@ async def debug(ctx, *, command: str):
     """
     Run a debug command.
     """
+    if bot.running_debug:
+        await bot.say(bot.msg_prefix + "You are doing this too fast \U0001F620 ")
+        return
     try:
         result = eval(command)
         if inspect.isawaitable(result):
+            bot.running_debug = True
             result = await result
     except Exception as e:
         result = repr(e)
     if config["token"] in str(result):
-        fmt = bot.msg_prefix + "Doing this would reveal my token!!!"
+        fmt = command + "\n" + bot.msg_prefix + "Doing this would reveal my token!!!"
     else:
         fmt = "```xl\nInput: {}\nOutput: {}\nOutput class: {}```".format(command, result, result.__class__.__name__)
     await asyncio.sleep(0.5)
     await bot.edit_message(ctx.message, new_content=fmt)
+    await asyncio.sleep(2)
+    bot.running_debug = False
 
 
 if __name__ == '__main__':
+    bot.logger.info("\n\n\n")
+    bot.logger.info("Initializing")
     if config.get('token', ""):
-        for extension in config.get('auto_load', []):
+        for ex in config.get('auto_load', []):
             try:
-                bot.load_extension(extension)
-                bot.logger.info("Successfully loaded {}".format(extension))
-            except Exception as e:
-                bot.logger.info('Failed to load extension {}\n{}: {}'.format(extension, type(e).__name__, e))
-        bot.logger.info("Logging in...\n\n\n")
+                bot.load_extension(ex)
+                bot.logger.info("Successfully loaded {}".format(ex))
+            except Exception as err:
+                bot.logger.info('Failed to load extension {}\n{}: {}'.format(ex, type(err).__name__, err))
+        bot.logger.info("Logging in...")
         bot.run(config['token'], bot=False)
     else:
         bot.logger.info("Please add the token to the config file!")

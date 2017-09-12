@@ -109,7 +109,7 @@ class Memes:
                                         headers={"Authorization": "Client-ID {}".format(
                                             self.config['imgur_client_id'])}) as response:
                     response_json = json.loads(await response.text())
-                    response_tags = await self.ask(ctx, "Please give tags")
+                    response_tags = await self.ask("Please give tags")
                     if len(response_tags) > 0:
                         tags = self.normalize(response_tags).split()
                     else:
@@ -332,7 +332,7 @@ class Memes:
         """
         Does stuff to last meme
         """
-        if ctx.invoked_subcommand is None:
+        if ctx.invoked_subcommand is None: # TIL I could just use `invoke_without_command=True` in deco
             if not self._last_meme:
                 await self.bot.say(self.bot.msg_prefix + "You haven't used meme since last restart.")
                 return
@@ -467,5 +467,5 @@ class Memes:
         self.save_memes()
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(Memes(bot))

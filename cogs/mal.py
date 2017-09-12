@@ -30,21 +30,21 @@ class Mal:
             darktext = i.find("span", attrs={"class": "dark_text"})
             if darktext:
                 if darktext.string == "English:":
-                    args["aliases"].append(darktext.parent.text.split(":")[-1].strip())
-                    args["english"] = darktext.parent.text.split(":")[-1].strip()
+                    args["aliases"].append(':'.join(darktext.parent.text.split(":")[1:]).strip())
+                    args["english"] = ':'.join(darktext.parent.text.split(":")[1:]).strip()
                 elif darktext.string == "Japanese:":
-                    args["aliases"].append(darktext.parent.text.split(":")[-1].strip())
+                    args["aliases"].append(':'.join(darktext.parent.text.split(":")[1:]).strip())
                 elif darktext.string == "Type:":
-                    args["type"] = darktext.parent.text.split(":")[-1].strip()
+                    args["type"] = ':'.join(darktext.parent.text.split(":")[1:]).strip()
                 elif darktext.string == "Episodes:":
                     try:
-                        args["episodes"] = int(darktext.parent.text.split(":")[-1].strip())
+                        args["episodes"] = int(':'.join(darktext.parent.text.split(":")[1:]).strip())
                     except:
                         args["episodes"] = None
                 elif darktext.string == "Status:":
-                    args["status"] = darktext.parent.text.split(":")[-1].strip()
+                    args["status"] = ':'.join(darktext.parent.text.split(":")[1:]).strip()
                 elif darktext.string == "Aired:":
-                    aired_parts = darktext.parent.text.split(":")[-1].strip().split(" to ")
+                    aired_parts = ':'.join(darktext.parent.text.split(":")[1:]).strip().split(" to ")
                     if len(aired_parts) == 1:
                         try:
                             args["airedfrom"] = dateutil.parser.parse(aired_parts[0])
@@ -60,7 +60,7 @@ class Mal:
                         except:
                             args["airedto"] = None
                 elif darktext.string == "Premiered:":
-                    args["premiered"] = darktext.parent.text.split(":")[-1].strip()
+                    args["premiered"] = ':'.join(darktext.parent.text.split(":")[1:]).strip()
                 elif darktext.string == "Broadcast:":
                     args["broadcast"] = ":".join(darktext.parent.text.split(":")[1:]).strip()
                 elif darktext.string == "Producers:":
@@ -82,14 +82,14 @@ class Mal:
                         ids.append(a.get("href").split("/")[-2])
                     args["studios"] = ids
                 elif darktext.string == "Source:":
-                    args["source"] = darktext.parent.text.split(":")[-1].strip()
+                    args["source"] = ':'.join(darktext.parent.text.split(":")[1:]).strip()
                 elif darktext.string == "Genres:":
                     ids = []
                     for a in darktext.parent.find_all("a"):
                         ids.append(a.get("href").split("/")[-2])
                     args["genres"] = ids
                 elif darktext.string == "Duration:":
-                    duration_text = darktext.parent.text.split(":")[-1].strip()
+                    duration_text = ':'.join(darktext.parent.text.split(":")[1:]).strip()
                     duration_mins = 0
                     for part in duration_text.split("."):
                         part_match = re.findall('(\\d+)', part)
@@ -102,10 +102,10 @@ class Mal:
                             duration_mins += part_volume
                     args["duration"] = duration_mins
                 elif darktext.string == "Rating:":
-                    args["rating"] = darktext.parent.text.split(":")[-1].strip()
+                    args["rating"] = ':'.join(darktext.parent.text.split(":")[1:]).strip()
                 elif darktext.string == "Score:":
                     try:
-                        args["score"] = float(darktext.parent.text.split(":")[-1].split("(")[0].strip())
+                        args["score"] = float(':'.join(darktext.parent.text.split(":")[1:]).split("(")[0].strip())
                     except:
                         args["score"] = None
         try:
@@ -195,5 +195,5 @@ class Mal:
         await self.bot.delete_message(to_del)
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(Mal(bot))

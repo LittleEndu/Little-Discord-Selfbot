@@ -9,7 +9,7 @@ class Fun:
     Fun and useful stuff
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(pass_context=True)
@@ -61,12 +61,11 @@ class Fun:
         count += 1
         iterator = self.bot.logs_from(ctx.message.channel, limit=1000)
         async for m in iterator:
-            if isinstance(m, discord.Message):
-                if m.author == self.bot.user:
-                    await self.bot.delete_message(m)
-                    count -= 1
-                    if count <= 0:
-                        return
+            if m.author == self.bot.user:
+                await self.bot.delete_message(m)
+                count -= 1
+                if count <= 0:
+                    return
 
     async def ask(self, question: str):
         to_del = await self.bot.say(self.bot.msg_prefix + question)
@@ -95,11 +94,10 @@ class Fun:
             count = 0
             async for m in iterator:
                 count += 1
-                if isinstance(m, discord.Message):
-                    date = m.timestamp
-                    if m.author == self.bot.user:
-                        await self.bot.delete_message(m)
-                        await asyncio.sleep(0.5)
+                date = m.timestamp
+                if m.author == self.bot.user:
+                    await self.bot.delete_message(m)
+                    await asyncio.sleep(0.5)
             if count == 0:
                 break
             iterator = self.bot.logs_from(ctx.message.channel, limit=5000, before=date)
@@ -134,5 +132,5 @@ class Fun:
         return names
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(Fun(bot))
