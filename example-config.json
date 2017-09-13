@@ -1,7 +1,13 @@
 {
   "token": "",
-  "auto_load": [],
-  "prefix": "",
+  "auto_load": [
+    "fun"
+  ],
+  "prefix": ">",
   "info_msg": "",
-  "imgur_client_id": ""
+  "imgur_client_id": "",
+  "unsafe_to_expose": [
+    "token",
+    "imgur_client_id"
+  ]
 }

@@ -153,8 +153,9 @@ async def debug(ctx, *, command: str):
             result = await result
     except Exception as e:
         result = repr(e)
-    if config["token"] in str(result):
-        fmt = command + "\n" + bot.msg_prefix + "Doing this would reveal my token!!!"
+    if any([(config.get(i) in str(result)) if i in config.keys() else False for i in config.get("unsafe_to_expose")]):
+        await bot.say(bot.msg_prefix + "Doing this would reveal sensitive info!!!")
+        fmt = ctx.message.content
     else:
         fmt = "```xl\nInput: {}\nOutput: {}\nOutput class: {}```".format(command, result, result.__class__.__name__)
     await asyncio.sleep(0.5)
@@ -169,7 +170,7 @@ if __name__ == '__main__':
     if config.get('token', ""):
         for ex in config.get('auto_load', []):
             try:
-                bot.load_extension(ex)
+                bot.load_extension("cogs.{}".format(ex))
                 bot.logger.info("Successfully loaded {}".format(ex))
             except Exception as err:
                 bot.logger.info('Failed to load extension {}\n{}: {}'.format(ex, type(err).__name__, err))
